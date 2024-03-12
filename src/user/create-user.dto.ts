@@ -9,4 +9,6 @@ export class userDetailsDto {
   employee_salary: number;
   @Min(2)
   employee_age: number;
+
+  password: string;
 }

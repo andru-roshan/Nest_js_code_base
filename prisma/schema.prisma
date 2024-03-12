@@ -15,4 +15,5 @@ model UserDetails {
   employee_name   String
   employee_salary Int
   employee_age    Int
+  password        String
 }
