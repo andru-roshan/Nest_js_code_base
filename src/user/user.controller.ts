@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   NotFoundException,
   Param,
   Patch,
@@ -14,6 +16,9 @@ import {
 import { UserService } from './user.service';
 import { userDetailsDto } from './create-user.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { Roles } from 'src/decorator/roles.decorator';
+import { Role } from 'utils/enum/roles.enum';
+import { RolesGuard } from 'src/guard/role.guard';
 
 @Controller('user')
 export class UserController {
@@ -35,21 +40,31 @@ export class UserController {
     }
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Post()
-  postUserData(@Body(new ValidationPipe()) createUser: userDetailsDto) {
-    console.log('user', createUser);
-    return this.service?.createUser(createUser);
+  @Roles(Role.Admin)
+  async postUserData(@Body(new ValidationPipe()) createUser: userDetailsDto) {
+    const isUserExits = await this.service.CheckUsername({
+      employee_id: createUser.employee_id,
+      employee_email: createUser.employee_email,
+    });
+    if (isUserExits) {
+      throw new HttpException('user already exist', HttpStatus?.BAD_REQUEST);
+    } else {
+      return this.service?.createUser(createUser);
+    }
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Patch(':id')
+  @Roles(Role.Admin)
   patchUserData(@Param('id') id: string, @Body() updateUser: userDetailsDto) {
     return this.service?.updateUser(id, updateUser);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RolesGuard)
   @Delete(':id')
+  @Roles(Role.Admin)
   deleteUser(@Param('id') id: string) {
     return this.service?.deleteUser(id);
   }

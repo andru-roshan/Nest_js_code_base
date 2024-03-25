@@ -11,9 +11,12 @@ datasource db {
 }
 
 model UserDetails {
-  id              String @id @default(auto()) @map("_id") @db.ObjectId
-  employee_name   String
-  employee_salary Int
-  employee_age    Int
-  password        String
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  employee_name  String
+  employee_email String   @unique
+  employee_id    String   @unique
+  role           String
+  password       String
+  createdAt      DateTime
+  updatedAt      DateTime
 }
