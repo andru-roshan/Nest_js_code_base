@@ -9,7 +9,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
@@ -19,18 +18,22 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { Roles } from 'src/decorator/roles.decorator';
 import { Role } from 'utils/enum/roles.enum';
 import { RolesGuard } from 'src/guard/role.guard';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private service: UserService) {}
 
   @UseGuards(AuthGuard)
+  @ApiBearerAuth('access-token')
   @Get()
-  findAllUser(@Query('id') id: string) {
-    return this.service?.findAllUser(id);
+  findAllUser() {
+    return this.service?.findAllUser();
   }
 
   @UseGuards(AuthGuard)
+  @ApiBearerAuth('access-token')
   @Get(':id')
   findParticularUser(@Param('id') id: string) {
     try {
@@ -41,6 +44,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @Post()
   @Roles(Role.Admin)
   async postUserData(@Body(new ValidationPipe()) createUser: userDetailsDto) {
@@ -56,6 +60,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @Patch(':id')
   @Roles(Role.Admin)
   patchUserData(@Param('id') id: string, @Body() updateUser: userDetailsDto) {
@@ -63,6 +68,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('access-token')
   @Delete(':id')
   @Roles(Role.Admin)
   deleteUser(@Param('id') id: string) {

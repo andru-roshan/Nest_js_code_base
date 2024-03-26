@@ -7,8 +7,8 @@ import { messages } from 'utils/constant';
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async findAllUser(id?: string) {
-    const user = await this.prisma.userDetails.findMany({ where: { id } });
+  async findAllUser() {
+    const user = await this.prisma.userDetails.findMany();
     return { message: messages.GET_USER, data: user, statusCode: '200' };
   }
   async findParticularUserByName(employee_name?: string) {
